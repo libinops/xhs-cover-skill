@@ -1,0 +1,99 @@
+[
+  {
+    "id": "xhs-note-with-author",
+    "name": "XHS Note Screenshot — First Image (with Author)",
+    "format": "xhs-note-screenshot",
+    "slot": "first",
+    "languages": ["zh"],
+    "files": {
+      "zh": "assets/templates/xhs-note-with-author/zh.html"
+    },
+    "best_for": [
+      "小红书图文帖第一张",
+      "需要展示头像和作者名的帖子",
+      "普通图文笔记的起始页"
+    ],
+    "avoid_for": [
+      "需要装饰风格的长文卡片",
+      "需要图表、徽章、章节标题的卡片"
+    ],
+    "style_tags": [
+      "raw note",
+      "white background",
+      "avatar header",
+      "3:4",
+      "body text only"
+    ],
+    "audience": [
+      "小红书读者",
+      "内容创作者",
+      "品牌账号"
+    ],
+    "density": "medium",
+    "motion": "none",
+    "image_intensity": "low",
+    "image_slots": ["avatar"],
+    "avatar_required": true,
+    "author_required": true,
+    "date_required": true,
+    "export": {
+      "css_size": "600x800",
+      "png_size": "1200x1600",
+      "ratio": "3:4"
+    },
+    "origin": {
+      "made_with": ["Codex"],
+      "status": "purpose-built",
+      "attribution": "Built as a raw Xiaohongshu note screenshot, modeled on the real 小红书 post layout."
+    },
+    "agent_ready": true
+  },
+  {
+    "id": "xhs-note-body",
+    "name": "XHS Note Screenshot — Body Image (no Author)",
+    "format": "xhs-note-screenshot",
+    "slot": "body",
+    "languages": ["zh"],
+    "files": {
+      "zh": "assets/templates/xhs-note-body/zh.html"
+    },
+    "best_for": [
+      "小红书图文帖第二张及之后的图片",
+      "不需要展示作者信息的正文页",
+      "长正文被分页后的每一页"
+    ],
+    "avoid_for": [
+      "需要展示头像和作者名的第一张图"
+    ],
+    "style_tags": [
+      "raw note",
+      "white background",
+      "no header",
+      "3:4",
+      "body text only"
+    ],
+    "audience": [
+      "小红书读者",
+      "内容创作者",
+      "品牌账号"
+    ],
+    "density": "medium",
+    "motion": "none",
+    "image_intensity": "low",
+    "image_slots": [],
+    "avatar_required": false,
+    "author_required": false,
+    "date_required": false,
+    "export": {
+      "css_size": "600x800",
+      "png_size": "1200x1600",
+      "ratio": "3:4"
+    },
+    "origin": {
+      "made_with": ["Codex"],
+      "status": "purpose-built",
+      "attribution": "Built as a raw Xiaohongshu note screenshot body page, sharing canvas and rhythm with the first image."
+    },
+    "agent_ready": true
+  }
+]

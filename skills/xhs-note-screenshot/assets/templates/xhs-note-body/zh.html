@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content="XHS Note Screenshot" />
+<meta name="template-origin" content="XHS Note Screenshot — body image">
+<title>小红书笔记 — 正文</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#1a1a1a;
+    --ink-soft:#444444;
+    --ink-faint:#999999;
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{min-height:100%;}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:#e9e9e9;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+
+  .scene{
+    position:relative;
+    width:600px;
+    max-width:calc(100vw - 24px);
+    height:800px;
+    background:var(--bg);
+    overflow:hidden;
+  }
+
+  .body{
+    padding:40px;
+    font-size:22px;
+    line-height:1.8;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+
+  .body p{
+    margin-bottom:18px;
+  }
+
+  .body p:last-child{
+    margin-bottom:0;
+  }
+
+  @media (max-width:650px){
+    body{padding:8px;}
+    .scene{
+      width:100%;
+      height:auto;
+      min-height:80vh;
+    }
+    .body{padding:24px;font-size:18px;line-height:1.7;}
+    .body p{margin-bottom:14px;}
+  }
+</style>
+</head>
+<body>
+  <main class="scene" aria-label="小红书笔记 — 正文">
+    <section class="body">
+{{BODY_PARAGRAPHS}}
+    </section>
+  </main>
+</body>
+</html>

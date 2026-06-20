@@ -1,0 +1,16 @@
+{
+  "name": "xhs-post-skill",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Skill collection that generates Xiaohongshu-style raw note screenshots (avatar + author on the first image, body text on subsequent images) from input text.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "list": "node skills/xhs-note-screenshot/scripts/list-templates.mjs",
+    "test": "node skills/xhs-note-screenshot/tests/avatar-display.test.mjs",
+    "create:demo": "node skills/xhs-note-screenshot/scripts/create-design.mjs --template xhs-note-with-author --lang zh --out output/xhs-note-demo.html"
+  },
+  "devDependencies": {
+    "playwright": ">=1.40.0"
+  }
+}

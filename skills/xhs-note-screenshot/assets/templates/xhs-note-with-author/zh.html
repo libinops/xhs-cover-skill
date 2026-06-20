@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content="XHS Note Screenshot" />
+<meta name="template-origin" content="XHS Note Screenshot — first image">
+<title>{{AUTHOR_NAME}} 的小红书笔记</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#1a1a1a;
+    --ink-soft:#444444;
+    --ink-faint:#999999;
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{min-height:100%;}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:#e9e9e9;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+
+  .scene{
+    position:relative;
+    width:600px;
+    max-width:calc(100vw - 24px);
+    height:800px;
+    background:var(--bg);
+    overflow:hidden;
+  }
+
+  .author{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:40px 40px 28px 40px;
+  }
+
+  .author-avatar{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#d9d9d9;
+    flex-shrink:0;
+    display:block;
+  }
+
+  .author-meta{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:0;
+  }
+
+  .author-name{
+    font-size:24px;
+    line-height:1.2;
+    font-weight:600;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+
+  .author-date{
+    font-size:14px;
+    line-height:1.2;
+    font-weight:400;
+    color:var(--ink-faint);
+    letter-spacing:0.02em;
+  }
+
+  .body{
+    padding:0 40px 40px 40px;
+    font-size:22px;
+    line-height:1.8;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+
+  .body p{
+    margin-bottom:18px;
+  }
+
+  .body p:last-child{
+    margin-bottom:0;
+  }
+
+  @media (max-width:650px){
+    body{padding:8px;}
+    .scene{
+      width:100%;
+      height:auto;
+      min-height:80vh;
+    }
+    .author{padding:24px 24px 18px 24px;}
+    .author-avatar{width:48px;height:48px;}
+    .author-name{font-size:18px;}
+    .author-date{font-size:12px;}
+    .body{padding:0 24px 24px 24px;font-size:18px;line-height:1.7;}
+    .body p{margin-bottom:14px;}
+  }
+</style>
+</head>
+<body>
+  <main class="scene" aria-label="小红书笔记 — {{AUTHOR_NAME}}">
+    <header class="author">
+      <img class="author-avatar" src="{{AVATAR_SRC}}" alt="{{AUTHOR_NAME}} 的头像" />
+      <div class="author-meta">
+        <div class="author-name">{{AUTHOR_NAME}}</div>
+        <div class="author-date">{{AUTHOR_DATE}}</div>
+      </div>
+    </header>
+    <section class="body">
+{{BODY_PARAGRAPHS}}
+    </section>
+  </main>
+</body>
+</html>

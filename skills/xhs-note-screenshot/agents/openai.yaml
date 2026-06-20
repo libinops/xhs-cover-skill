@@ -1,0 +1,4 @@
+interface:
+  display_name: "XHS Note Screenshot"
+  short_description: "Generate Xiaohongshu-style raw post screenshots from text. Avatar and author appear on the first image only."
+  default_prompt: "Use when the user wants a plain white-background 小红书 note card with avatar + author on the first image and body text on subsequent images. Resolve avatar from a user-provided link first, then a configured user-profile.json. Never fabricate avatar URLs or author names."
