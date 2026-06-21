@@ -1,0 +1,28 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package Claude
+        env:
+          SKILL_DIR: xhs-note-screenshot
+        run: (cd skills && zip -r ../xhs-note-screenshot.zip "$SKILL_DIR")
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            xhs-note-screenshot.zip
+          fail_on_unmatched_files: true
+          generate_release_notes: true
