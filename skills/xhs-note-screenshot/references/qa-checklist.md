@@ -28,6 +28,15 @@
 - 段落不能被裁切，不能出现横向滚动条。
 - 第一张图的内边距与正文图一致（CSS 40px）。
 
+## Markdown 检查
+
+- 输入文件中的 `**...**`、`*...*`、`` `...` ``、`# ...`、`- ...`、`1. ...`、`> ...`、`[...](...)` 已被解析为对应 HTML 标签，而不是被原样转义。
+- 独占一行的 `---` 被识别为分页符号 —— 每条 `---` 之后的内容出现在新的 `note-NN.html` 文件中。
+- 标题 `h1` / `h2` / `h3` 字号依次递减，且不会出现在第一张图以外的图上时挤压正文空间。
+- `blockquote` 左侧有一条暖灰色竖线，文字为斜体。
+- `code` / `pre code` 使用等宽字体，带浅墨色背景。
+- `ul` / `ol` 缩进正确（28px），不与外层内边距重叠。
+
 ## 多图检查
 
 - 如果输入能放进单张图，就不要生成第二张图。
@@ -36,8 +45,10 @@
 
 ## 测试代码
 
-`tests/avatar-display.test.mjs` 是规范的检查工具。它会针对 fixture 运行 `build-note.mjs`，检查生成的 HTML 文件，并对上述结构规则做断言。运行方式：
+`tests/avatar-display.test.mjs` 和 `tests/markdown-rendering.test.mjs` 是规范的检查工具。它们会针对 fixture 运行 `build-note.mjs`，检查生成的 HTML 文件，并对上述结构规则做断言。运行方式：
 
 ```bash
-node tests/avatar-display.test.mjs
+npm test              # 跑全部测试
+npm run test:avatar   # 只跑头像 / 作者解析
+npm run test:markdown # 只跑 Markdown 渲染
 ```

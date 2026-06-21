@@ -1,0 +1,19 @@
+{
+  "name": "xhs-note-screenshot-skill",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Generates Xiaohongshu-style raw note screenshots (avatar + author on the first image, body text on subsequent images) from input text or Markdown.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "list": "node scripts/list-templates.mjs",
+    "test": "node tests/avatar-display.test.mjs && node tests/markdown-rendering.test.mjs",
+    "test:avatar": "node tests/avatar-display.test.mjs",
+    "test:markdown": "node tests/markdown-rendering.test.mjs",
+    "create:demo": "node scripts/create-design.mjs --template xhs-note-with-author --lang zh --out output/xhs-note-demo.html"
+  },
+  "devDependencies": {
+    "marked": ">=12.0.0",
+    "playwright": ">=1.40.0"
+  }
+}

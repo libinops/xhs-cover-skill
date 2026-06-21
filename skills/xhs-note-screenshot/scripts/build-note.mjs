@@ -3,6 +3,7 @@ import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { marked } from "marked";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -125,101 +126,119 @@ if (avatarUrl) {
   resolution.avatar.src.source = "placeholder";
 }
 
-// 3. Read the input text and split into paragraphs.
+// 3. Read the input text and split into markdown blocks.
+//
+//    Two strategies, in order of priority:
+//    a) If the input contains a line that is exactly `---` (3+ dashes), treat
+//       each `---` as an explicit scene break. Users can then control scene
+//       boundaries by writing `---` between paragraphs.
+//    b) Otherwise, fall back to splitting on blank lines (one paragraph per
+//       blank-line gap) and let the char-budget packer group them.
+//
+//    All blocks are kept as raw markdown source. Rendering to HTML happens
+//    later, after grouping, so each scene's blocks are parsed together as one
+//    markdown document.
 const inputAbsolute = resolve(process.cwd(), inputPath);
 await access(inputAbsolute);
 const rawText = await readFile(inputAbsolute, "utf8");
-const paragraphs = rawText
-  .replace(/\r\n/g, "\n")
-  .split(/\n\s*\n+/)
-  .map((p) => p.trim())
-  .filter((p) => p.length > 0);
+const normalizedText = rawText.replace(/\r\n/g, "\n");
 
-if (paragraphs.length === 0) {
+const HORIZONTAL_RULE = /^---+\s*$/m;
+const hasHorizontalRule = HORIZONTAL_RULE.test(normalizedText);
+
+let markdownBlocks;
+if (hasHorizontalRule) {
+  markdownBlocks = normalizedText
+    .split(HORIZONTAL_RULE)
+    .map((b) => b.trim())
+    .filter((b) => b.length > 0);
+} else {
+  markdownBlocks = normalizedText
+    .split(/\n\s*\n+/)
+    .map((b) => b.trim())
+    .filter((b) => b.length > 0);
+}
+
+if (markdownBlocks.length === 0) {
   console.error(`Input file ${inputPath} is empty.`);
   process.exit(1);
 }
 
-// 4. Pack paragraphs into images using a character budget. First image has the
-//    author header, so it gets a smaller effective body budget.
-function packParagraphs(paragraphs, budget) {
-  const groups = [];
-  let current = [];
-  let used = 0;
-  for (const p of paragraphs) {
-    const length = p.length;
-    if (current.length === 0) {
-      current.push(p);
-      used = length;
-      continue;
-    }
-    if (used + length + 1 <= budget) {
-      current.push(p);
-      used += length + 1;
-    } else {
-      groups.push(current);
-      current = [p];
-      used = length;
-    }
-  }
-  if (current.length > 0) groups.push(current);
-  return groups;
-}
-
-// The first image has a smaller body area (author header takes ~120px CSS).
-// We approximate the budget difference by reducing the first image by ~25%.
+// 4. Pack markdown blocks into images.
+//
+//    Two modes:
+//    a) Explicit scene breaks: if the input contains `---` lines, each
+//       `---`-separated block is its own scene. We never merge them, even
+//       if a single block is small. The user opted into a hard boundary.
+//    b) Char-budget packing: no `---` present. We group blocks by character
+//       count. The first image gets a smaller budget (~75%) because the
+//       author header eats vertical space.
+//
+//    In both modes, a single block can still overflow the .scene box. The
+//    CSS has `overflow: hidden`, so the bottom gets clipped. Users who need
+//    long sections should either increase `--max-chars-per-image` or split
+//    the content themselves.
 const firstImageBudget = Math.max(120, Math.floor(maxChars * 0.75));
 const remainingBudget = maxChars;
-const firstGroup = paragraphs.slice(0, 0); // placeholder, real assignment below
 
-// Build groups with first image capped at firstImageBudget, others at remainingBudget.
 const groups = [];
 let consumed = 0;
-{
-  // First image
-  const first = [];
-  let used = 0;
-  while (consumed < paragraphs.length) {
-    const p = paragraphs[consumed];
-    const length = p.length;
-    if (first.length === 0) {
-      first.push(p);
-      used = length;
-      consumed++;
-      continue;
-    }
-    if (used + length + 1 <= firstImageBudget) {
-      first.push(p);
-      used += length + 1;
-      consumed++;
-    } else {
-      break;
-    }
+
+if (hasHorizontalRule) {
+  // Explicit breaks: one block per scene, no merging.
+  for (const block of markdownBlocks) {
+    groups.push([block]);
   }
-  groups.push(first);
-}
-// Body images
-while (consumed < paragraphs.length) {
-  const group = [];
-  let used = 0;
-  while (consumed < paragraphs.length) {
-    const p = paragraphs[consumed];
-    const length = p.length;
-    if (group.length === 0) {
-      group.push(p);
-      used = length;
-      consumed++;
-      continue;
+} else {
+  // No explicit breaks: pack by char budget.
+
+  // First image: pack blocks until the budget is hit.
+  {
+    const first = [];
+    let used = 0;
+    while (consumed < markdownBlocks.length) {
+      const block = markdownBlocks[consumed];
+      const length = block.length;
+      if (first.length === 0) {
+        first.push(block);
+        used = length;
+        consumed++;
+        continue;
+      }
+      if (used + length + 2 <= firstImageBudget) {
+        first.push(block);
+        used += length + 2;
+        consumed++;
+      } else {
+        break;
+      }
     }
-    if (used + length + 1 <= remainingBudget) {
-      group.push(p);
-      used += length + 1;
-      consumed++;
-    } else {
-      break;
-    }
+    groups.push(first);
   }
-  groups.push(group);
+
+  // Body images: same packing logic against the remaining budget.
+  while (consumed < markdownBlocks.length) {
+    const group = [];
+    let used = 0;
+    while (consumed < markdownBlocks.length) {
+      const block = markdownBlocks[consumed];
+      const length = block.length;
+      if (group.length === 0) {
+        group.push(block);
+        used = length;
+        consumed++;
+        continue;
+      }
+      if (used + length + 2 <= remainingBudget) {
+        group.push(block);
+        used += length + 2;
+        consumed++;
+      } else {
+        break;
+      }
+    }
+    groups.push(group);
+  }
 }
 
 // 5. Read the templates and substitute placeholders.
@@ -235,21 +254,30 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
-function paragraphsToHtml(paragraphs) {
-  return paragraphs.map((p) => `      <p>${escapeHtml(p).replace(/\n/g, "<br>")}</p>`).join("\n");
+// Configure marked once. GFM enables tables / strikethrough / task lists /
+// autolinks. breaks=true converts single newlines to <br>, matching common
+// markdown expectations for plain text.
+marked.setOptions({ gfm: true, breaks: true });
+
+// Each scene holds one or more raw markdown blocks. We join them with a blank
+// line (standard markdown paragraph separator) and parse as one document so
+// headings, lists, etc. flow naturally across blocks within a scene.
+function renderMarkdown(blocks) {
+  const source = Array.isArray(blocks) ? blocks.join("\n\n") : String(blocks ?? "");
+  return marked.parse(source, { async: false });
 }
 
-function fillWithAuthorTemplate(paragraphs) {
+function fillWithAuthorTemplate(blocks) {
   return withAuthorTemplate
     .replaceAll("{{AUTHOR_NAME}}", escapeHtml(resolution.author.name.value))
     .replaceAll("{{AUTHOR_DATE}}", escapeHtml(resolution.author.date.value))
     .replaceAll("{{AVATAR_SRC}}", escapeHtml(resolution.avatar.src.value))
-    .replaceAll("{{BODY_PARAGRAPHS}}", paragraphsToHtml(paragraphs));
+    .replaceAll("{{BODY_PARAGRAPHS}}", renderMarkdown(blocks));
 }
 
-function fillBodyTemplate(paragraphs) {
+function fillBodyTemplate(blocks) {
   return bodyTemplate
-    .replaceAll("{{BODY_PARAGRAPHS}}", paragraphsToHtml(paragraphs));
+    .replaceAll("{{BODY_PARAGRAPHS}}", renderMarkdown(blocks));
 }
 
 // 6. Write per-image HTML files and a stitched carousel HTML.
@@ -282,9 +310,9 @@ const carouselParts = imageRecords.map((record, i) => {
   // Reuse the per-image HTML body (everything inside <body>).
   // To keep the carousel self-contained, we inline the relevant CSS variables
   // and re-render the body block per image.
-  const paragraphs = groups[i];
+  const blocks = groups[i];
   const isFirst = i === 0;
-  const paragraphHtml = paragraphsToHtml(paragraphs);
+  const bodyHtml = renderMarkdown(blocks);
   if (isFirst) {
     return `  <main class="scene" aria-label="小红书笔记 — ${escapeHtml(resolution.author.name.value)}">
     <header class="author">
@@ -295,13 +323,13 @@ const carouselParts = imageRecords.map((record, i) => {
       </div>
     </header>
     <section class="body">
-${paragraphHtml}
+${bodyHtml}
     </section>
   </main>`;
   }
   return `  <main class="scene" aria-label="小红书笔记 — 正文 ${i + 1}">
     <section class="body">
-${paragraphHtml}
+${bodyHtml}
     </section>
   </main>`;
 });
@@ -355,6 +383,22 @@ const carouselHtml = `<!DOCTYPE html>
   .body.is-first{padding-top:0;}
   .body p{margin-bottom:18px;}
   .body p:last-child{margin-bottom:0;}
+  .body h1,.body h2,.body h3{font-weight:700;line-height:1.4;color:var(--ink);margin:0 0 16px 0;letter-spacing:0.01em;}
+  .body h1{font-size:30px;}
+  .body h2{font-size:26px;}
+  .body h3{font-size:24px;}
+  .body h1+p,.body h2+p,.body h3+p{margin-top:-4px;}
+  .body strong{font-weight:700;}
+  .body em{font-style:italic;}
+  .body code{font-family:"SF Mono","Menlo","Consolas",monospace;font-size:0.9em;background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;}
+  .body pre{background:rgba(0,0,0,0.06);padding:16px;border-radius:8px;overflow-x:auto;margin:0 0 18px 0;font-size:16px;line-height:1.6;}
+  .body pre code{background:transparent;padding:0;font-size:inherit;border-radius:0;}
+  .body ul,.body ol{margin:0 0 18px 0;padding-left:28px;}
+  .body li{margin-bottom:6px;}
+  .body li:last-child{margin-bottom:0;}
+  .body blockquote{margin:0 0 18px 0;padding:4px 0 4px 16px;border-left:3px solid var(--ink-faint);color:var(--ink-soft);font-style:italic;}
+  .body a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--ink-faint);text-underline-offset:3px;}
+  .body hr{border:none;border-top:1px dashed var(--ink-faint);margin:24px 0;}
 </style>
 </head>
 <body>
