@@ -71,7 +71,7 @@ function todayString() {
 
 function placeholderAvatarSvg() {
   // Inline SVG data URI for a round gray block, 128×128.
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><circle cx="64" cy="64" r="64" fill="#d9d9d9"/></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><circle cx="64" cy="64" r="64" fill="#c9bfa6"/></svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
 
@@ -316,13 +316,14 @@ const carouselHtml = `<!DOCTYPE html>
 <title>${escapeHtml(title || `${resolution.author.name.value} 的小红书笔记`)}</title>
 <style>
   :root{
-    --bg:#ffffff;
+    --bg:#f3e8d2;
+    --paper-outer:#e8dcc0;
     --ink:#1a1a1a;
-    --ink-faint:#999999;
+    --ink-faint:#7a6a52;
     --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  html,body{background:#e9e9e9;min-height:100%;}
+  html,body{background:var(--paper-outer);min-height:100%;}
   body{
     font-family:var(--sans);
     color:var(--ink);
@@ -345,7 +346,7 @@ const carouselHtml = `<!DOCTYPE html>
     padding:40px 40px 28px 40px;
   }
   .author-avatar{
-    width:64px;height:64px;border-radius:50%;object-fit:cover;background:#d9d9d9;flex-shrink:0;display:block;
+    width:64px;height:64px;border-radius:50%;object-fit:cover;background:#c9bfa6;flex-shrink:0;display:block;
   }
   .author-meta{display:flex;flex-direction:column;gap:4px;min-width:0;}
   .author-name{font-size:24px;line-height:1.2;font-weight:600;color:var(--ink);letter-spacing:0.01em;}

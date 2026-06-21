@@ -4,7 +4,7 @@
 
 ## “原生笔记”意味着什么
 
-- 纯白底，没有渐变、没有面板、没有阴影。
+- 柔和的牛皮纸底色（`#f3e8d2`），没有渐变、没有面板、没有阴影。
 - 一栏正文。不要侧边栏，不要卡片里再嵌卡片，不要标注框。
 - 唯一的结构元素就是头像 / 作者 / 日期头部，且**只出现在第一张图**上。
 - 字体使用系统默认的 CJK 字体（macOS 上是 `PingFang SC`，Windows 上是 `Microsoft YaHei`，并以 `Noto Sans SC` 兜底）。不引入 webfont，不用定制衬线。
@@ -43,7 +43,7 @@
 
 1. **本次运行中用户直接输入的值** —— `build-note.mjs` 的 CLI 参数。详见 `references/user-profile.md`。
 2. **已配置的用户档案** —— `--profile <path>`，再 `assets/user-profile.json`，再 `~/.config/xhs-note-screenshot/user-profile.json`。
-3. **中性占位** —— 圆形灰色 `#d9d9d9` 占位头像 + 作者名 `匿名`（zh）/ `Anonymous`（en）。
+3. **中性占位** —— 圆形暖灰色 `#c9bfa6` 占位头像 + 作者名 `匿名`（zh）/ `Anonymous`（en）。
 
 本 skill **永远不会**凭空捏造未被提供的头像 URL 或作者名。
 
